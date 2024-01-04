@@ -11,7 +11,9 @@ abstract class ProductRepository {
 
   Future<List<ProductInItemShopping>> getAllProductsShopping();
 
-  Stream<List<ProductInItemShopping>> getAllProductsShoppingAsync();
+  // Stream<List<ProductInItemShopping>> getAllProductsShoppingAsync();
 
-  Future<void> refreshProduct(ProductInItemShopping product);
+  Future<bool> refreshProduct(ProductInItemShopping product);
+
+  Future<bool> saveProduct(Product product);
 }

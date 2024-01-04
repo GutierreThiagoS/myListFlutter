@@ -16,8 +16,8 @@ abstract class ItemShoppingDao {
   @delete
   Future<int> deleteItemShopping(ItemShopping itemShopping);
 
-  @Query('SELECT * FROM ItemShopping WHERE id = :id LIMIT 1')
-  Future<ItemShopping?> findId(int id);
+  @Query('SELECT * FROM ItemShopping WHERE id = :id OR productId = :productId LIMIT 1')
+  Future<ItemShopping?> findId(int id, int productId);
 
   @Query('DELETE FROM ItemShopping')
   Future<void> deleteAll();
@@ -41,5 +41,12 @@ abstract class ItemShoppingDao {
           'INNER JOIN Category AS C ON P.categoryIdFk = C.id'
   )
   Stream<List<ProductInItemShopping>> getAllShoppingAsync();
+
+  /*@Query(
+      'SELECT DISTINCT C.* FROM Product AS P '
+          'INNER JOIN ItemShopping AS I ON P.id = I.productId '
+          'INNER JOIN Category AS C ON P.categoryIdFk = C.id'
+  )
+  Future<List<Category>> getAllCategory();*/
 }
 

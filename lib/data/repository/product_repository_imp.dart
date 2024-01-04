@@ -2,7 +2,6 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:my_list_flutter/data/local/dao/product_dao.dart';
 import 'package:my_list_flutter/data/local/database.dart';
 import 'package:my_list_flutter/domain/model/product_in_item_shopping.dart';
 import 'package:my_list_flutter/domain/model_entity/item_shopping.dart';
@@ -13,25 +12,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductRepositoryImp implements ProductRepository {
 
-  ProductDao? _productDao;
-
-  ProductRepositoryImp(this._productDao) {
-    final database = $FloorAppDatabase.databaseBuilder('app_database.db').build();
-    database.then((db) {
-      _productDao = db.productDao;
-    });
-  }
-
   @override
   Future<void> checkProduct() async {
     try {
       final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
       final categoryDao = database.categoryDao;
+      final productDao = database.productDao;
       if ((await categoryDao.getAll()).isEmpty) {
         categoryDao.insertAll(categories);
       }
-      if ((await _productDao!.getAll()).isEmpty) {
-        _productDao!.insertAll(products);
+      if ((await productDao.getAll()).isEmpty) {
+        productDao.insertAll(products);
       }
     } catch(e) {
       print(e);
@@ -89,23 +80,31 @@ class ProductRepositoryImp implements ProductRepository {
         final itemShoppingDao = database.itemShoppingDao;
 
         print("ProductInItemShopping $product");
-        final item = await itemShoppingDao.findId(product.id ?? 0);
+        final item = await itemShoppingDao.findId(product.id ?? 0, product.productId ?? 0);
         print("item $item");
         if (item != null) {
           item.quantity = product.quantity??0;
           if (item.quantity >= 0) {
+            print("ProductInItemShopping update.quantity ${item.quantity}");
             final up = await itemShoppingDao.updateItemShopping(item);
             return up > 0;
           } else {
+            print("ProductInItemShopping delete.quantity ${item.quantity}");
             final up = await itemShoppingDao.deleteItemShopping(item);
             return up > 0;
           }
         } else {
-          final newItem = ItemShopping(null, product.productId??0, product.quantity??0);
-          print("newItem $newItem");
+          print("ProductInItemShopping item null insert product");
+          if ((product.quantity??0) >= 0) {
+            final newItem = ItemShopping(
+                null, product.productId ?? 0, product.quantity ?? 0);
+            print("newItem $newItem");
 
-          final up = await itemShoppingDao.insertItemShopping(newItem);
-          return up > 0;
+            final up = await itemShoppingDao.insertItemShopping(newItem);
+            return up > 0;
+          } else {
+            return true;
+          }
         }
       }
     } catch(e) {
@@ -134,7 +133,19 @@ class ProductRepositoryImp implements ProductRepository {
   }
 
   @override
-  Stream<List<ProductInItemShopping>> getAllProductsShoppingAsync() {
-    return _productDao!.getAllShoppingAsync();
+  Future<bool> saveProduct(Product product) async {
+    try {
+      final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+      final productDao = database.productDao;
+      final up = await productDao.insertProduct(product);
+      return up > 0;
+    } catch(e) {
+      print("e");
+      return false;
+    }
   }
+
+ /* Stream<List<ProductInItemShopping>> getAllProductsShoppingAsync() {
+    return _productDao.getAllShoppingAsync();
+  }*/
 }

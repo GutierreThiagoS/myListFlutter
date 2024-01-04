@@ -6,6 +6,8 @@ abstract class ShoppingRepository {
 
   Future<List<ProductInItemShopping>> getAllShopping();
 
-  Stream<List<ProductInItemShopping>> getAllShoppingAsync();
+  // Future<List<Category>> getAllCategory();
+
+  // Stream<List<ProductInItemShopping>> getAllShoppingAsync();
 
 }

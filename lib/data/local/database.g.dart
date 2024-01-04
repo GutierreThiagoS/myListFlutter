@@ -206,7 +206,7 @@ class _$ProductDao extends ProductDao {
   }
 
   @override
-  Stream<List<ProductInItemShopping>> getAllShoppingAsync() {
+  Stream<List<ProductInItemShopping>> getAllProductWithShoppingAsync() {
     return _queryAdapter.queryListStream(
         'SELECT I.id | 0 AS id, P.id AS productId, P.description AS description, P.image AS image, P.brand AS brand, C.id AS categoryId, C.name AS categoryDescription, P.ean AS ean, P.price AS price, I.quantity AS quantity FROM Product AS P LEFT JOIN ItemShopping AS I ON P.id = I.productId LEFT JOIN Category AS C ON P.categoryIdFk = C.id',
         mapper: (Map<String, Object?> row) => ProductInItemShopping(
@@ -221,6 +221,34 @@ class _$ProductDao extends ProductDao {
             row['price'] as double?,
             row['quantity'] as int?),
         queryableName: 'Product',
+        isView: false);
+  }
+
+  @override
+  Stream<List<ProductInItemShopping>> getAllShoppingAsync() {
+    return _queryAdapter.queryListStream(
+        'SELECT DISTINCT I.id | 0 AS id, P.id AS productId, P.description AS description, P.image AS image, P.brand AS brand, C.id AS categoryId, C.name AS categoryDescription, P.ean AS ean, P.price AS price, I.quantity AS quantity FROM Product AS P INNER JOIN ItemShopping AS I ON P.id = I.productId INNER JOIN Category AS C ON P.categoryIdFk = C.id',
+        mapper: (Map<String, Object?> row) => ProductInItemShopping(
+            row['id'] as int?,
+            row['productId'] as int?,
+            row['description'] as String?,
+            row['image'] as String?,
+            row['brand'] as String?,
+            row['categoryId'] as int?,
+            row['categoryDescription'] as String?,
+            row['ean'] as String?,
+            row['price'] as double?,
+            row['quantity'] as int?),
+        queryableName: 'Product',
+        isView: false);
+  }
+
+  @override
+  Stream<double?> getTotalAsync() {
+    return _queryAdapter.queryStream(
+        'SELECT COALESCE(SUM(P.price * I.quantity), 0) FROM ItemShopping AS I LEFT JOIN Product AS P ON P.id = I.productId',
+        mapper: (Map<String, Object?> row) => row.values.first as double,
+        queryableName: 'ItemShopping',
         isView: false);
   }
 
@@ -283,8 +311,28 @@ class _$CategoryDao extends CategoryDao {
   }
 
   @override
+  Future<Category?> findName(String name) async {
+    return _queryAdapter.query('SELECT * FROM Category WHERE name = ?1 LIMIT 1',
+        mapper: (Map<String, Object?> row) =>
+            Category(row['id'] as int?, row['name'] as String),
+        arguments: [name]);
+  }
+
+  @override
   Future<void> deleteAll() async {
     await _queryAdapter.queryNoReturn('DELETE FROM Category');
+  }
+
+  @override
+  Future<List<String>> getAllDescription() async {
+    return _queryAdapter.queryList('SELECT DISTINCT name FROM Category',
+        mapper: (Map<String, Object?> row) => row.values.first as String);
+  }
+
+  @override
+  Future<List<String>> getAllBrand() async {
+    return _queryAdapter.queryList('SELECT DISTINCT brand FROM Product',
+        mapper: (Map<String, Object?> row) => row.values.first as String);
   }
 
   @override
@@ -344,12 +392,15 @@ class _$ItemShoppingDao extends ItemShoppingDao {
   final DeletionAdapter<ItemShopping> _itemShoppingDeletionAdapter;
 
   @override
-  Future<ItemShopping?> findId(int id) async {
+  Future<ItemShopping?> findId(
+    int id,
+    int productId,
+  ) async {
     return _queryAdapter.query(
-        'SELECT * FROM ItemShopping WHERE id = ?1 LIMIT 1',
+        'SELECT * FROM ItemShopping WHERE id = ?1 OR productId = ?2 LIMIT 1',
         mapper: (Map<String, Object?> row) => ItemShopping(row['id'] as int?,
             row['productId'] as int?, row['quantity'] as int),
-        arguments: [id]);
+        arguments: [id, productId]);
   }
 
   @override

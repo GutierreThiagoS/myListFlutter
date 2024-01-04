@@ -1,45 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_list_flutter/components/progress_circular.dart';
-import 'package:my_list_flutter/controller/shopping_controller.dart';
+import 'package:my_list_flutter/components/custom_progress.dart';
+import 'package:my_list_flutter/data/local/dao/product_dao.dart';
+import 'package:my_list_flutter/domain/model/category_and_products.dart';
 import 'package:my_list_flutter/domain/model/product_in_item_shopping.dart';
+import 'package:my_list_flutter/framework/utils/text.dart';
+import 'package:my_list_flutter/framework/view/menu/widget/catalog_page_view.dart';
 
-class ShoppingPage extends ConsumerWidget {
-  const ShoppingPage({super.key});
+class ShoppingPage extends ConsumerStatefulWidget {
+  final ProductDao dao;
+  const ShoppingPage({super.key, required this.dao});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ShoppingPage> createState() => _ShoppingPageState();
+}
+
+class _ShoppingPageState extends ConsumerState<ShoppingPage> {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      child: ref.watch(shoppingAllSync).when(
+      child:/* ref.watch(shoppingAll).when(
           data: (data) {
             print(data);
-            print(data.isBroadcast);
-
-            return Container(
+            return*/ Container(
+                color: Colors.black12,
                 child: StreamBuilder<List<ProductInItemShopping>>(
-                    stream: data,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        var data = snapshot.requireData;
-                        return Container(
-                            child: ListView.separated(
-                                itemBuilder: (_, i) => ListTile(
-                                      title: Text(
-                                          "${data[i].quantity} - ${data[i].description}"),
-                                      onTap: () {
+                  stream: widget.dao.getAllShoppingAsync(),
+                  builder: (_, snapshot) {
+                    if (!snapshot.hasData) return CustomProgress();
+                    final data = snapshot.requireData;
+                    List<CategoryAndProducts> categories = data
+                        .map((e) {
+                          return CategoryAndProducts(
+                              e.categoryId,
+                              e.categoryDescription ?? "",
+                              data.where(
+                                      (element) => element.categoryId == (e.categoryId ?? 0)
+                              ).toList(),
+                              PageController(viewportFraction: 0.45));
+                        })
+                        .toList()
+                        .distinctBy((d) => d.id!)
+                        .toList();
 
-                                      },
-                                    ),
-                                separatorBuilder: (_, __) => const Divider(),
-                                itemCount: data.length));
-                      } else {
-                        return Text("Carregando...");
-                      }
-                    }));
-          },
+                    return CatalogPageView(
+                      isShopping: true,
+                        list: data,
+                        categories: categories
+                    );
+                  },
+                )
+      )
+          /*},
           error: (error, stackTrace) => Text("Error $error"),
-          loading: () => ProgressCircular()),
+          loading: () => ProgressCircular()),*/
     );
   }
 }

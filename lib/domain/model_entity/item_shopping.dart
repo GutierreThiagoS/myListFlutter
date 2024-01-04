@@ -24,4 +24,9 @@ class ItemShopping {
       'quantity': quantity
     };
   }
+
+  @override
+  String toString() {
+    return "${toJson()}";
+  }
 }

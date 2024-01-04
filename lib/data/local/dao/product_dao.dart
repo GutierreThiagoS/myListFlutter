@@ -39,8 +39,24 @@ abstract class ProductDao {
           'LEFT JOIN ItemShopping AS I ON P.id = I.productId '
           'LEFT JOIN Category AS C ON P.categoryIdFk = C.id'
   )
+  Stream<List<ProductInItemShopping>> getAllProductWithShoppingAsync();
+
+  @Query(
+      'SELECT DISTINCT I.id | 0 AS id, P.id AS productId, P.description AS description, '
+          'P.image AS image, P.brand AS brand, C.id AS categoryId, '
+          'C.name AS categoryDescription, P.ean AS ean, P.price AS price, '
+          'I.quantity AS quantity FROM Product AS P '
+          'INNER JOIN ItemShopping AS I ON P.id = I.productId '
+          'INNER JOIN Category AS C ON P.categoryIdFk = C.id '
+  )
   Stream<List<ProductInItemShopping>> getAllShoppingAsync();
 
+  @Query('SELECT COALESCE(SUM(P.price * I.quantity), 0) '
+      'FROM ItemShopping AS I LEFT JOIN Product AS P '
+      'ON P.id = I.productId'
+  )
+  Stream<double?> getTotalAsync();
+  
   @Query('DELETE FROM Product')
   Future<void> deleteAll();
 }

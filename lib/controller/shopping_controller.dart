@@ -12,20 +12,26 @@ class ShoppingController extends ChangeNotifier {
   final ShoppingRepository _shoppingRepository;
   ShoppingController(this._shoppingRepository);
 
+  final ValueNotifier<double> total = ValueNotifier<double>(0);
+
+  final ValueNotifier<List<ProductInItemShopping>> productsInShopping = ValueNotifier<List<ProductInItemShopping>>([]);
+
+
   Future<List<ProductInItemShopping>> getAllShoppingAsync() async {
-    await Future.delayed(Duration(seconds: 10));
+    setTotal(await _shoppingRepository.getAllShopping());
     return _shoppingRepository.getAllShopping();
   }
 
-  Stream<List<ProductInItemShopping>> getAllShoppingAsyncStream() {
-    return _shoppingRepository.getAllShoppingAsync();
+  void setTotal(List<ProductInItemShopping> data) {
+    try {
+      var totalMap = data.map((element) => (element.price??0) * (element.quantity??0));
+      total.value = totalMap.reduce((value, element) => value + element);
+    } catch(e) {
+      print(e);
+    }
   }
 }
 
-final shoppingAll = FutureProvider((ref) {
-  return ref.read(injectShoppingController).getAllShoppingAsync();
-});
-
-final shoppingAllSync = FutureProvider((ref) {
-  return ref.read(injectShoppingController).getAllShoppingAsyncStream();
+final shoppingAll = FutureProvider<Future<List<ProductInItemShopping>>>((ref) {
+  return ref.watch(injectShoppingController).getAllShoppingAsync();
 });

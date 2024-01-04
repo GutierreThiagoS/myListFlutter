@@ -17,7 +17,15 @@ abstract class CategoryDao {
   @Query('SELECT * FROM Category WHERE id = :id LIMIT 1')
   Future<Category?> findId(int id);
 
+  @Query('SELECT * FROM Category WHERE name = :name LIMIT 1')
+  Future<Category?> findName(String name);
+
   @Query('DELETE FROM Category')
   Future<void> deleteAll();
 
+  @Query('SELECT DISTINCT name FROM Category')
+  Future<List<String>> getAllDescription();
+
+  @Query('SELECT DISTINCT brand FROM Product')
+  Future<List<String>> getAllBrand();
 }

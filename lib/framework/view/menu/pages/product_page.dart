@@ -1,76 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:my_list_flutter/components/progress_circular.dart';
-import 'package:my_list_flutter/controller/product_controller.dart';
+import 'package:my_list_flutter/components/custom_progress.dart';
+import 'package:my_list_flutter/data/local/dao/product_dao.dart';
+import 'package:my_list_flutter/domain/model/category_and_products.dart';
 import 'package:my_list_flutter/domain/model/product_in_item_shopping.dart';
-import 'package:my_list_flutter/main.dart';
+import 'package:my_list_flutter/framework/utils/text.dart';
+import 'package:my_list_flutter/framework/view/menu/widget/catalog_page_view.dart';
 
-class ProductPage extends ConsumerWidget {
-  const ProductPage({super.key});
+class ProductPage extends ConsumerStatefulWidget {
+  final ProductDao dao;
+  const ProductPage({super.key, required this.dao});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProductPage> createState() => _ProductPageState();
+}
+
+class _ProductPageState extends ConsumerState<ProductPage> {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      child: ref.watch(allShoppingInProductsAsync).when(
-          data: (data) {
-            print(data);
-            return Container(
-              child: StreamBuilder<List<ProductInItemShopping>>(
-                  stream: data,
-                  builder: (context, snapshot) {
-                    if(snapshot.hasData) {
-                      final data = snapshot.requireData;
-                      return Container(
-                        child: ListView.separated(
-                            itemBuilder: (_, i) =>
-                                ListTile(
-                                  title: Column(
-                                    children: [
-                                      Text("${data[i].productId} - ${data[i]
-                                          .description}"),
-                                      Row(
-                                        children: [
-                                          OutlinedButton(
-                                              onPressed: () {
-                                                data[i].quantity =
-                                                    data[i].quantity ?? 0 - 1;
-                                                ref.read(injectProductController)
-                                                    .refreshProduct(data[i]);
-                                              },
-                                              child: Icon(Icons.remove)
-                                          ),
-                                          SizedBox(width: 10,),
-                                          Text("${data[i].quantity ?? 0}"),
-                                          SizedBox(width: 10,),
-                                          OutlinedButton(
-                                              onPressed: () {
-                                                data[i].quantity =
-                                                    data[i].quantity ?? 0 + 1;
-                                                ref.read(injectProductController)
-                                                    .refreshProduct(data[i]);
-                                              },
-                                              child: Icon(Icons.add)
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  onTap: () {
-                                  },
-                                ),
-                            separatorBuilder: (_, __) => const Divider(),
-                            itemCount: data.length),
-                      );
-                    } else {
-                      return Text("");
-                    }
+        color: Colors.black12,
+        child: Consumer(builder: (context, watch, _) {
+          return StreamBuilder<List<ProductInItemShopping>>(
+            stream: widget.dao.getAllProductWithShoppingAsync(),
+            builder: (_, snapshot) {
+              if (!snapshot.hasData) return CustomProgress();
+              final data = snapshot.requireData;
+              List<CategoryAndProducts> categories = data
+                  .map((e) {
+                    return CategoryAndProducts(
+                        e.categoryId,
+                        e.categoryDescription ?? "",
+                        data
+                            .where((element) =>
+                                element.categoryId == (e.categoryId ?? 0))
+                            .toList(),
+                        PageController(viewportFraction: 0.45));
                   })
-            );
-          },
-          error: (error, stackTrace) => Text("Error"),
-          loading: () =>  ProgressCircular()
-      ),
-    ) ;
+                  .toList()
+                  .distinctBy((d) => d.id!)
+                  .toList();
+
+              return CatalogPageView(list: data, categories: categories);
+            },
+          );
+        })
+    );
   }
 }
