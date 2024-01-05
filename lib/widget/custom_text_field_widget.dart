@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 class CustomTextFieldWidget extends StatefulWidget {
   final Function(String) onChange;
   final String label;
-  final TextEditingController? userNameController;
+  final TextEditingController? controller;
   final bool obscureText;
   final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final Function()? onPressedSuffixIcon;
 
   const CustomTextFieldWidget(
       {
@@ -13,8 +15,10 @@ class CustomTextFieldWidget extends StatefulWidget {
         required this.onChange,
         required this.label,
         this.obscureText = false,
-        this.userNameController,
-        this.prefixIcon
+        this.controller,
+        this.prefixIcon,
+        this.suffixIcon,
+        this.onPressedSuffixIcon
       });
 
   @override
@@ -37,7 +41,7 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
         valueListenable: visible,
       builder: (_, isVisible, __) {
             return TextField(
-        controller: widget.userNameController,
+        controller: widget.controller,
         decoration: InputDecoration(
             label: Text(widget.label),
             focusedBorder: OutlineInputBorder(
@@ -51,11 +55,14 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                 ? IconButton(
                     icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off),
                     onPressed: () {
-                      setState(() {
-                        visible.value = !isVisible;
-                      });
+                      visible.value = !isVisible;
                     },
                   )
+                : widget.suffixIcon != null
+                ? IconButton(
+              icon: Icon(widget.suffixIcon),
+              onPressed: widget.onPressedSuffixIcon,
+            )
                 : null),
         onChanged: widget.onChange,
         obscureText: isVisible,

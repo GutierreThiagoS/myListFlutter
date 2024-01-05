@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class AutocompleteTextFieldWidget extends StatefulWidget {
   final Function(String) onChange;
   final String label;
-  final TextEditingController? userNameController;
+  final String textInit;
+  final TextEditingController? controller;
   final List<String> options;
   final IconData? prefixIcon;
 
@@ -11,7 +12,8 @@ class AutocompleteTextFieldWidget extends StatefulWidget {
     super.key,
     required this.onChange,
     required this.label,
-    this.userNameController,
+    this.textInit = "",
+    this.controller,
     required this.options,
     this.prefixIcon
   });
@@ -39,6 +41,7 @@ class _AutocompleteTextFieldWidgetState extends State<AutocompleteTextFieldWidge
           },
           onSelected: widget.onChange,
           fieldViewBuilder: (BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+            textEditingController.text = widget.textInit;
             return TextField(
               controller: textEditingController,
               focusNode: focusNode,

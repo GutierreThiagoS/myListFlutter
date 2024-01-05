@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:my_list_flutter/domain/model/product_in_item_shopping.dart';
 import 'package:my_list_flutter/domain/model_entity/product.dart';
 import 'package:my_list_flutter/domain/repository/category_repository.dart';
 import 'package:my_list_flutter/domain/repository/product_repository.dart';
@@ -15,19 +16,29 @@ class AddProductController extends ChangeNotifier {
   bool canPop = true;
 
   String _description = "";
+  String get description => _description;
   setDescription(String value) => _description = value;
 
+  String url() => "$_description $_brand";
+
   String _brand = "";
+  String get brand => _brand;
   setBrand(String value) => _brand = value;
 
   String _category = "";
+  String get category => _category;
   setCategory(String value) => _category = value;
 
   String _ean = "";
+  String get ean => _ean;
   setEan(String value) => _ean = value;
 
   String _price = "";
+  String get price => _price;
   setPrice(String value) => _price = value;
+
+  ValueNotifier<String> image = ValueNotifier<String>("");
+  setImage(String value) => image.value = value;
 
   Future<List<String>> getAllCategoryDescription() async {
     return _categoryRepository.getAllDescription();
@@ -37,7 +48,7 @@ class AddProductController extends ChangeNotifier {
     return _categoryRepository.getAllBrand();
   }
 
-  Future<bool> saveNewProduct() async {
+  Future<bool> saveNewProduct(ProductInItemShopping? product) async {
 
     if(_description.isNotEmpty &&
         _category.isNotEmpty &&
@@ -48,11 +59,13 @@ class AddProductController extends ChangeNotifier {
       if (categoryDb != null) {
         canPop = true;
         print("${double.tryParse(_price)}");
+        print("ProductInItemShopping? $product");
+        print("categoryDb $categoryDb");
         _productRepository.saveProduct(
             Product(
-                null,
+                product?.productId,
                 _description,
-                "",
+                image.value,
                 _brand,
                 categoryDb.id,
                 _ean,

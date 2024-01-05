@@ -137,8 +137,13 @@ class ProductRepositoryImp implements ProductRepository {
     try {
       final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
       final productDao = database.productDao;
-      final up = await productDao.insertProduct(product);
-      return up > 0;
+      if(product.id == null) {
+        final up = await productDao.insertProduct(product);
+        return up > 0;
+      } else {
+        final up = await productDao.updateProduct(product);
+        return up > 0;
+      }
     } catch(e) {
       print("e");
       return false;

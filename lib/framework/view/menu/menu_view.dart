@@ -10,6 +10,7 @@ import 'package:my_list_flutter/main.dart';
 
 class MenuView extends ConsumerStatefulWidget {
   final ProductDao dao;
+
   const MenuView({super.key, required this.dao});
 
   @override
@@ -17,7 +18,6 @@ class MenuView extends ConsumerStatefulWidget {
 }
 
 class _MenuViewState extends ConsumerState<MenuView> {
-
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
@@ -49,69 +49,70 @@ class _MenuViewState extends ConsumerState<MenuView> {
             title: ValueListenableBuilder<int>(
                 valueListenable: ref.read(injectProductController).indexMenu,
                 builder: (_, i, __) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(getTitle(i, isSwitch.value)),
-                      i == 0
-                          ? Row(
-                        children: [
-                          ValueListenableBuilder<bool>(
-                              valueListenable: isSwitch,
-                              builder: (_, status, __) => Switch(
-                                  thumbIcon: MaterialStatePropertyAll(
-                                      Icon(status
-                                          ? Icons.shopping_cart
-                                          : Icons.shopping_cart_checkout)),
-                                  value: status,
-                                  onChanged: onChanged
-                              )
-                          ),
-                          // IconButton(
-                          //     onPressed: () {},
-                          //     icon: Icon(Icons.calculate_outlined)),
-                          SizedBox(width: 10),
-                          StreamBuilder<double?>(
-                              stream: widget.dao.getTotalAsync(),
-                              builder: (_, snapshot) {
-                                if (!snapshot.hasData) return Container();
-                                final total = snapshot.requireData ?? 0;
-                                return Text(
-                                  "Total ${formatter.format(total)}",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold),
-                                );
-                              })
-                        ],
-                      )
-                          : SizedBox(),
-                    ],
-                  );
-                })
-        ),
+                  return ValueListenableBuilder<bool>(
+                      valueListenable: isSwitch,
+                      builder: (_, status, __) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(getTitle(i, isSwitch.value)),
+                            i == 0
+                                ? Row(children: [
+                                      Switch(
+                                          thumbIcon: MaterialStatePropertyAll(
+                                              Icon(status
+                                                  ? Icons.shopping_cart
+                                                  : Icons
+                                                      .shopping_cart_checkout)),
+                                          value: status,
+                                          onChanged: onChanged
+                                      ),
+                                    SizedBox(width: 10),
+                              ValueListenableBuilder<double>(
+                                          valueListenable: ref.read(injectShoppingController).total,
+                                          builder: (_, total,__) {
+                                            return Text(
+                                              "Total ${formatter.format(total)}",
+                                              style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold),
+                                            );
+                                          })
+                                    ])
+                                : SizedBox(),
+                          ],
+                        );
+                      });
+                })),
         body: Container(
             child: PageView(
-              controller: pageController,
-              onPageChanged: onItemTappedPage,
-              children: [
-                ValueListenableBuilder<bool>(
-                    valueListenable: isSwitch,
-                    builder: (_, status, __) =>
-                    status ? ShoppingPage(dao: widget.dao) : ProductPage(dao: widget.dao)),
-                NotificationPage(dao: widget.dao),
-                Container(
-                  color: Colors.yellow,
-                )
-              ],
-            )),
-        floatingActionButton: IconButton(
-          color: Colors.black,
-          icon: Icon(Icons.add, color: Colors.white, size: 20),
+          controller: pageController,
+          onPageChanged: onItemTappedPage,
+          children: [
+            ValueListenableBuilder<bool>(
+                valueListenable: isSwitch,
+                builder: (_, status, __) => status
+                    ? ShoppingPage(dao: widget.dao)
+                    : ProductPage(dao: widget.dao)),
+            NotificationPage(dao: widget.dao),
+            Container(
+              color: Colors.yellow,
+            )
+          ],
+        )),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.black,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(200.0),
+            ),
+          ),
           onPressed: () {
             Navigator.of(context).pushNamed("/adicionarProduto");
           },
+          child: const Icon(Icons.add, color: Colors.white),
         ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: ValueListenableBuilder<int>(
             valueListenable: ref.read(injectProductController).indexMenu,
             builder: (_, i, __) {
@@ -137,7 +138,6 @@ class _MenuViewState extends ConsumerState<MenuView> {
                 selectedIndex: i,
                 onDestinationSelected: onItemTapped,
               );
-            })
-    );
+            }));
   }
 }

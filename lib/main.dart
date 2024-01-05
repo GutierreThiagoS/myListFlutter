@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (_) => const SplashView(),
           '/principal': (_) => MenuView(dao: dao),
-          '/adicionarProduto': (_) => const AddProductView(),
+          '/adicionarProduto': (_) => AddProductView(),
         });
   }
 }
