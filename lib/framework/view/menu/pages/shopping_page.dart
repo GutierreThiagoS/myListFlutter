@@ -19,42 +19,33 @@ class _ShoppingPageState extends ConsumerState<ShoppingPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      child:/* ref.watch(shoppingAll).when(
-          data: (data) {
-            print(data);
-            return*/ Container(
-                color: Colors.black12,
-                child: StreamBuilder<List<ProductInItemShopping>>(
-                  stream: widget.dao.getAllShoppingAsync(),
-                  builder: (_, snapshot) {
-                    if (!snapshot.hasData) return CustomProgress();
-                    final data = snapshot.requireData;
-                    List<CategoryAndProducts> categories = data
-                        .map((e) {
-                          return CategoryAndProducts(
-                              e.categoryId,
-                              e.categoryDescription ?? "",
-                              data.where(
-                                      (element) => element.categoryId == (e.categoryId ?? 0)
-                              ).toList(),
-                              PageController(viewportFraction: 0.45));
-                        })
-                        .toList()
-                        .distinctBy((d) => d.id!)
-                        .toList();
+        color: Colors.black12,
+        child: StreamBuilder<List<ProductInItemShopping>>(
+          stream: widget.dao.getAllShoppingAsync(),
+          builder: (_, snapshot) {
+            if (!snapshot.hasData) return CustomProgress();
+            final data = snapshot.requireData;
+            List<CategoryAndProducts> categories = data
+                .map((e) {
+                  return CategoryAndProducts(
+                      e.categoryId,
+                      e.categoryDescription ?? "",
+                      data.where(
+                              (element) => element.categoryId == (e.categoryId ?? 0)
+                      ).toList(),
+                      PageController(viewportFraction: 0.45));
+                })
+                .toList()
+                .distinctBy((d) => d.id!)
+                .toList();
 
-                    return CatalogPageView(
-                      isShopping: true,
-                        list: data,
-                        categories: categories
-                    );
-                  },
-                )
-      )
-          /*},
-          error: (error, stackTrace) => Text("Error $error"),
-          loading: () => ProgressCircular()),*/
+            return CatalogPageView(
+              isShopping: true,
+                list: data,
+                categories: categories
+            );
+          },
+        )
     );
   }
 }

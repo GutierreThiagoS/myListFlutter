@@ -13,7 +13,7 @@ class AddProductController extends ChangeNotifier {
   final ProductRepository _productRepository;
   AddProductController(this._categoryRepository, this._productRepository);
 
-  bool canPop = true;
+  // bool canPop = true;
 
   String _description = "";
   String get description => _description;
@@ -57,10 +57,8 @@ class AddProductController extends ChangeNotifier {
     ) {
       final categoryDb = await _categoryRepository.getCategoryName(_category);
       if (categoryDb != null) {
-        canPop = true;
-        print("${double.tryParse(_price)}");
+        // canPop = true;
         print("ProductInItemShopping? $product");
-        print("categoryDb $categoryDb");
         _productRepository.saveProduct(
             Product(
                 product?.productId,
@@ -87,6 +85,7 @@ class AddProductController extends ChangeNotifier {
     _category = "";
     _ean = "";
     _price = "";
+    image.value = "";
   }
 }
 

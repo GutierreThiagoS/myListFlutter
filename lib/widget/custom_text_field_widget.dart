@@ -8,6 +8,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final IconData? prefixIcon;
   final IconData? suffixIcon;
   final Function()? onPressedSuffixIcon;
+  final Function()? onPressedPrefixIcon;
+  final int? minLines;
 
   const CustomTextFieldWidget(
       {
@@ -18,7 +20,9 @@ class CustomTextFieldWidget extends StatefulWidget {
         this.controller,
         this.prefixIcon,
         this.suffixIcon,
-        this.onPressedSuffixIcon
+        this.onPressedSuffixIcon,
+        this.onPressedPrefixIcon,
+        this.minLines
       });
 
   @override
@@ -50,7 +54,10 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
             enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey, width: 1.0),
             ),
-            prefixIcon: Icon(widget.prefixIcon),
+            prefixIcon: IconButton(
+                icon: Icon(widget.prefixIcon, color: Colors.grey.shade900),
+                onPressed: widget.onPressedPrefixIcon
+            ),
             suffixIcon: widget.obscureText
                 ? IconButton(
                     icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off),
@@ -66,6 +73,8 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                 : null),
         onChanged: widget.onChange,
         obscureText: isVisible,
+        minLines: widget.minLines,
+        maxLines: null
       );
     });
   }

@@ -2,6 +2,7 @@
 import 'package:floor/floor.dart';
 import 'package:my_list_flutter/domain/model/product_in_item_shopping.dart';
 import 'package:my_list_flutter/domain/model_entity/product.dart';
+import 'package:my_list_flutter/domain/model_entity/to_do_item.dart';
 
 @dao
 abstract class ProductDao {
@@ -56,6 +57,13 @@ abstract class ProductDao {
       'ON P.id = I.productId'
   )
   Stream<double?> getTotalAsync();
+
+  @Query(
+      'SELECT * FROM ToDoItem WHERE deleted = false '
+          'AND concluded = false '
+          'ORDER BY dateHour DESC'
+  )
+  Stream<List<ToDoItem>> getAllTodoAsync();
   
   @Query('DELETE FROM Product')
   Future<void> deleteAll();

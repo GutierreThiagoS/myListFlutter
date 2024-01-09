@@ -1,5 +1,7 @@
 
 
+import 'package:flutter/cupertino.dart';
+
 String getTitle(int index, bool isSwitch) {
   switch (index) {
     case 0:
@@ -33,4 +35,12 @@ extension IterableExtension<T> on Iterable<T> {
     return result;
   }
 
+}
+
+
+TextEditingController? getController(String? text) {
+  print("object2 $text");
+  return (text != null && text.isNotEmpty)
+      ? TextEditingController(text: text)
+      : null;
 }

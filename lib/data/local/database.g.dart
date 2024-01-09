@@ -67,6 +67,8 @@ class _$AppDatabase extends AppDatabase {
 
   ItemShoppingDao? _itemShoppingDaoInstance;
 
+  ToDoDao? _todoDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
@@ -96,6 +98,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `ItemShopping` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `productId` INTEGER, `quantity` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ProductInItemShopping` (`id` INTEGER, `productId` INTEGER, `description` TEXT, `image` TEXT, `brand` TEXT, `categoryId` INTEGER, `categoryDescription` TEXT, `ean` TEXT, `price` REAL, `quantity` INTEGER, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `ToDoItem` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `dateCreate` TEXT NOT NULL, `dateUpdate` TEXT NOT NULL, `dateFinal` TEXT NOT NULL, `hourAlert` TEXT NOT NULL, `hourInitAlert` TEXT NOT NULL, `dateHour` INTEGER NOT NULL, `level` INTEGER NOT NULL, `extendTimer` INTEGER NOT NULL, `alert` INTEGER NOT NULL, `concluded` INTEGER NOT NULL, `deleted` INTEGER NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -117,6 +121,11 @@ class _$AppDatabase extends AppDatabase {
   ItemShoppingDao get itemShoppingDao {
     return _itemShoppingDaoInstance ??=
         _$ItemShoppingDao(database, changeListener);
+  }
+
+  @override
+  ToDoDao get todoDao {
+    return _todoDaoInstance ??= _$ToDoDao(database, changeListener);
   }
 }
 
@@ -249,6 +258,29 @@ class _$ProductDao extends ProductDao {
         'SELECT COALESCE(SUM(P.price * I.quantity), 0) FROM ItemShopping AS I LEFT JOIN Product AS P ON P.id = I.productId',
         mapper: (Map<String, Object?> row) => row.values.first as double,
         queryableName: 'ItemShopping',
+        isView: false);
+  }
+
+  @override
+  Stream<List<ToDoItem>> getAllTodoAsync() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM ToDoItem WHERE deleted = false AND concluded = false ORDER BY dateHour DESC',
+        mapper: (Map<String, Object?> row) => ToDoItem(
+            id: row['id'] as int?,
+            title: row['title'] as String,
+            description: row['description'] as String,
+            dateCreate: row['dateCreate'] as String,
+            dateUpdate: row['dateUpdate'] as String,
+            dateFinal: row['dateFinal'] as String,
+            hourAlert: row['hourAlert'] as String,
+            hourInitAlert: row['hourInitAlert'] as String,
+            dateHour: row['dateHour'] as int,
+            level: row['level'] as int,
+            extendTimer: row['extendTimer'] as int,
+            alert: (row['alert'] as int) != 0,
+            concluded: (row['concluded'] as int) != 0,
+            deleted: (row['deleted'] as int) != 0),
+        queryableName: 'ToDoItem',
         isView: false);
   }
 
@@ -460,5 +492,100 @@ class _$ItemShoppingDao extends ItemShoppingDao {
   Future<int> deleteItemShopping(ItemShopping itemShopping) {
     return _itemShoppingDeletionAdapter
         .deleteAndReturnChangedRows(itemShopping);
+  }
+}
+
+class _$ToDoDao extends ToDoDao {
+  _$ToDoDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _toDoItemInsertionAdapter = InsertionAdapter(
+            database,
+            'ToDoItem',
+            (ToDoItem item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'description': item.description,
+                  'dateCreate': item.dateCreate,
+                  'dateUpdate': item.dateUpdate,
+                  'dateFinal': item.dateFinal,
+                  'hourAlert': item.hourAlert,
+                  'hourInitAlert': item.hourInitAlert,
+                  'dateHour': item.dateHour,
+                  'level': item.level,
+                  'extendTimer': item.extendTimer,
+                  'alert': item.alert ? 1 : 0,
+                  'concluded': item.concluded ? 1 : 0,
+                  'deleted': item.deleted ? 1 : 0
+                },
+            changeListener),
+        _toDoItemUpdateAdapter = UpdateAdapter(
+            database,
+            'ToDoItem',
+            ['id'],
+            (ToDoItem item) => <String, Object?>{
+                  'id': item.id,
+                  'title': item.title,
+                  'description': item.description,
+                  'dateCreate': item.dateCreate,
+                  'dateUpdate': item.dateUpdate,
+                  'dateFinal': item.dateFinal,
+                  'hourAlert': item.hourAlert,
+                  'hourInitAlert': item.hourInitAlert,
+                  'dateHour': item.dateHour,
+                  'level': item.level,
+                  'extendTimer': item.extendTimer,
+                  'alert': item.alert ? 1 : 0,
+                  'concluded': item.concluded ? 1 : 0,
+                  'deleted': item.deleted ? 1 : 0
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<ToDoItem> _toDoItemInsertionAdapter;
+
+  final UpdateAdapter<ToDoItem> _toDoItemUpdateAdapter;
+
+  @override
+  Future<List<ToDoItem>> getAll() async {
+    return _queryAdapter.queryList('SELECT * FROM ToDoItem',
+        mapper: (Map<String, Object?> row) => ToDoItem(
+            id: row['id'] as int?,
+            title: row['title'] as String,
+            description: row['description'] as String,
+            dateCreate: row['dateCreate'] as String,
+            dateUpdate: row['dateUpdate'] as String,
+            dateFinal: row['dateFinal'] as String,
+            hourAlert: row['hourAlert'] as String,
+            hourInitAlert: row['hourInitAlert'] as String,
+            dateHour: row['dateHour'] as int,
+            level: row['level'] as int,
+            extendTimer: row['extendTimer'] as int,
+            alert: (row['alert'] as int) != 0,
+            concluded: (row['concluded'] as int) != 0,
+            deleted: (row['deleted'] as int) != 0));
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM ToDoItem');
+  }
+
+  @override
+  Future<int> insertToDo(ToDoItem toDoItem) {
+    return _toDoItemInsertionAdapter.insertAndReturnId(
+        toDoItem, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> updateToDo(ToDoItem toDoItem) {
+    return _toDoItemUpdateAdapter.updateAndReturnChangedRows(
+        toDoItem, OnConflictStrategy.abort);
   }
 }

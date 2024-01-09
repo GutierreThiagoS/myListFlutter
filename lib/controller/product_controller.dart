@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:my_list_flutter/domain/model/product_in_item_shopping.dart';
 import 'package:my_list_flutter/domain/repository/product_repository.dart';
+import 'package:my_list_flutter/enums/navigation_selected.dart';
 import 'package:my_list_flutter/main.dart';
 
 class ProductController extends ChangeNotifier {
@@ -16,6 +17,18 @@ class ProductController extends ChangeNotifier {
 
   void setSelectedIndex(int i) {
     indexMenu.value = i;
+  }
+
+  bool isNavigationInShopping() {
+    return indexMenu.value == NavigationSelected.shoppingProduct.position;
+  }
+
+  bool isNavigationInTodo() {
+    return indexMenu.value == NavigationSelected.todoView.position;
+  }
+
+  bool isNavigationInConfig() {
+    return indexMenu.value == NavigationSelected.configView.position;
   }
 
   Future<List<ProductInItemShopping>> getAllProductsShopping() async {

@@ -17,6 +17,7 @@ class CatalogPageView extends ConsumerStatefulWidget {
 }
 
 class _CatalogPageViewState extends ConsumerState<CatalogPageView> {
+
   @override
   Widget build(BuildContext context) {
     ref.read(injectShoppingController).setTotal();

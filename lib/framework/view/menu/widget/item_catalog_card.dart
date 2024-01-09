@@ -23,13 +23,27 @@ class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
       if(image.contains("storage")) {
         return Image.file(File(image));
       } else {
-        return Image.network(image);
+        return getImageNetwork(image);
       }
     } else {
-      return  Image.network(
+      return  getImageNetwork(
           "https://triunfo.pe.gov.br/pm_tr430/wp-content/uploads/2018/03/sem-foto.jpg"
       );
     }
+  }
+
+  Widget getImageNetwork(String image) {
+    return Image.network(
+      image,
+      loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+        if (loadingProgress == null) return child;
+        return CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+              : null,
+        );
+      },
+    );
   }
 
   @override
@@ -41,48 +55,9 @@ class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
         itemBuilder: (_, widgetIndex) {
       return Card(
         child: InkWell(
-          onLongPress: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            widget.categoryAndProducts.products[widgetIndex].description??"",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18
-                          ),
-                        ),
-                        SizedBox(height: 15),
-                        Row(children: [
-                          ElevatedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                              child: Row(children: [
-                                Text("Cancelar"),
-                                SizedBox(width: 8),
-                                Icon(Icons.cancel)
-                              ])
-                          ),
-                          SizedBox(width: 10),
-                          ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pushNamed("/adicionarProduto", arguments: widget.categoryAndProducts.products[widgetIndex]);
-                                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                              },
-                              child: Row(children: [
-                                Text("Editar"),
-                                SizedBox(width: 8),
-                                Icon(Icons.edit_outlined)
-                              ])
-                          )
-                        ]),
-                      ],
-                    )
-            ));
-                },
+          onTap: () {
+
+          },
           child: Container(
             padding: EdgeInsets.all(10),
             child: Column(
