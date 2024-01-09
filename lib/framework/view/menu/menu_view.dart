@@ -72,7 +72,7 @@ class _MenuViewState extends ConsumerState<MenuView> {
                                                       .shopping_cart_checkout)),
                                           value: status,
                                           onChanged: onChanged),
-                                      SizedBox(width: 10),
+                                      const SizedBox(width: 10),
                                       ValueListenableBuilder<double>(
                                           valueListenable: ref
                                               .read(injectShoppingController)
@@ -80,13 +80,13 @@ class _MenuViewState extends ConsumerState<MenuView> {
                                           builder: (_, total, __) {
                                             return Text(
                                               "Total ${formatter.format(total)}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   fontSize: 15,
                                                   fontWeight: FontWeight.bold),
                                             );
                                           })
                                     ])
-                                  : SizedBox(),
+                                  : const SizedBox(),
                             ],
                           );
                         });
@@ -102,7 +102,7 @@ class _MenuViewState extends ConsumerState<MenuView> {
                       ? ShoppingPage(dao: widget.dao)
                       : ProductPage(dao: widget.dao)),
               ToDoListPage(dao: widget.dao),
-              ConfigurationPage()
+              const ConfigurationPage()
             ],
           )),
           floatingActionButton: ValueListenableBuilder<int>(

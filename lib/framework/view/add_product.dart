@@ -43,17 +43,17 @@ class AddProductView extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           "${product != null ? "Edite" : "Registre"} seu Produto",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
         child: Container(
           color: Colors.black12,
           width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           child: Card(
             child: Container(
-              padding: EdgeInsets.all(15),
+              padding: const EdgeInsets.all(15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -138,7 +138,7 @@ class AddProductView extends ConsumerWidget {
                               ref.read(injectAddProductController).brand),
                           prefixIcon: Icons.list_outlined),
                       error: (error, stackTrace) => Text("Error: $error"),
-                      loading: () => ProgressCircular()),
+                      loading: () => const ProgressCircular()),
                   const SizedBox(
                     height: 15,
                   ),
@@ -152,7 +152,7 @@ class AddProductView extends ConsumerWidget {
                           options: data,
                           prefixIcon: Icons.format_list_numbered_rounded),
                       error: (error, stackTrace) => Text("Error: $error"),
-                      loading: () => ProgressCircular()),
+                      loading: () => const ProgressCircular()),
                   const SizedBox(
                     height: 15,
                   ),

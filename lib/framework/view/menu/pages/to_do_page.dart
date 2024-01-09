@@ -21,7 +21,7 @@ class _ToDoListPageState extends ConsumerState<ToDoListPage> {
         child: StreamBuilder<List<ToDoItem>>(
             stream: widget.dao.getAllTodoAsync(),
             builder: (_, snapshot) {
-              if (!snapshot.hasData) return CustomProgress();
+              if (!snapshot.hasData) return const CustomProgress();
               final data = snapshot.requireData;
               print(data);
               if(data.isNotEmpty) {
@@ -32,7 +32,7 @@ class _ToDoListPageState extends ConsumerState<ToDoListPage> {
                       onPressed: () {
                         Navigator.of(context).pushNamed("/adicionarLembrete");
                       },
-                      child: Text("Adicione um lembrente")
+                      child: const Text("Adicione um lembrente")
                   ),
                 );
               }

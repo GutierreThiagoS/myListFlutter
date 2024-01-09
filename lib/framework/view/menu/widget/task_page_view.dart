@@ -17,7 +17,7 @@ class _TaskPageViewState extends State<TaskPageView> {
         shrinkWrap: true,
         itemBuilder: (_, i) {
           return ListTile(
-            contentPadding: EdgeInsets.only(left: 10, right: 10),
+            contentPadding: const EdgeInsets.only(left: 10, right: 10),
             title: Card(
               child: InkWell(
                 onTap: () {
@@ -28,12 +28,12 @@ class _TaskPageViewState extends State<TaskPageView> {
                             children: [
                               Text(
                                 widget.task[i].title,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18
                                 ),
                               ),
-                              SizedBox(height: 15),
+                              const SizedBox(height: 15),
                               Row(children: [
                                 ElevatedButton(
                                     onPressed: () {
@@ -42,7 +42,7 @@ class _TaskPageViewState extends State<TaskPageView> {
                                           arguments: widget.task[i]);
                                       ScaffoldMessenger.of(context).hideCurrentSnackBar();
                                     },
-                                    child: Row(children: [
+                                    child: const Row(children: [
                                       Text("Editar"),
                                       SizedBox(width: 8),
                                       Icon(Icons.edit_outlined)
@@ -54,13 +54,13 @@ class _TaskPageViewState extends State<TaskPageView> {
                       ));
                 },
                 child: Container(
-                  padding: EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                           widget.task[i].title,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black,
                           fontWeight: FontWeight.bold
                         ),
@@ -71,7 +71,7 @@ class _TaskPageViewState extends State<TaskPageView> {
                         children: [
                           Text(
                               "${widget.task[i].dateFinal} ${widget.task[i].hourInitAlert}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.black45
                             ),
                           ),

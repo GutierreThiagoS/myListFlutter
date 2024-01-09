@@ -23,7 +23,7 @@ class _ShoppingPageState extends ConsumerState<ShoppingPage> {
         child: StreamBuilder<List<ProductInItemShopping>>(
           stream: widget.dao.getAllShoppingAsync(),
           builder: (_, snapshot) {
-            if (!snapshot.hasData) return CustomProgress();
+            if (!snapshot.hasData) return const CustomProgress();
             final data = snapshot.requireData;
             List<CategoryAndProducts> categories = data
                 .map((e) {

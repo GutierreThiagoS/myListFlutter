@@ -26,11 +26,11 @@ class _CatalogPageViewState extends ConsumerState<CatalogPageView> {
       shrinkWrap: true,
         itemBuilder: (_, i) {
           return ListTile(
-            contentPadding: EdgeInsets.all(0),
+            contentPadding: const EdgeInsets.all(0),
             title: Column(
                 children: [
             Text(widget.categories[i].name),
-            Container(
+            SizedBox(
               height: 260,
               child: ItemCatalogCard(
                   isShopping: widget.isShopping,

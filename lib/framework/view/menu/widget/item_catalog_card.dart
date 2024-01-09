@@ -59,20 +59,20 @@ class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
 
           },
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text("${widget.categoryAndProducts.products[widgetIndex].description}",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14
                   ),
                 ),
                 Text("R\$ ${widget.categoryAndProducts.products[widgetIndex].price}",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 11
                   ),
@@ -114,17 +114,17 @@ class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
                           });
                         }
                       },
-                      icon: Icon(Icons.remove),
+                      icon: const Icon(Icons.remove),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Text(
                       "${widget.categoryAndProducts.products[widgetIndex].quantity ?? 0}",
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18
                       ),
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(width: 10,),
                     IconButton(
                         onPressed: () {
                           print(add);
@@ -148,7 +148,7 @@ class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
                             });
                           }
                         },
-                        icon: Icon(Icons.add)
+                        icon: const Icon(Icons.add)
                     ),
                   ],
                 )

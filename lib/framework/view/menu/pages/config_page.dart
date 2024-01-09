@@ -6,7 +6,7 @@ class ConfigurationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
         color: Colors.black12,
         child: Column(
           children: [
@@ -17,21 +17,21 @@ class ConfigurationPage extends StatelessWidget {
                 child: Column(
                   children: [
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       height: 200,
                       child: Image.asset(
                         "assets/user_settings.png",
                       ),
                     ),
-                    Text(
+                    const Text(
                         "Desenvolvido por Gutierre Guimarães",
                       style: TextStyle(
                         fontWeight: FontWeight.bold
                       ),
                     ),
-                    Text("Vesão: 0.0.1"),
+                    const Text("Vesão: 0.0.1"),
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       height: 75,
                       child: Image.asset(
                         "assets/linkedin_logo.png",
@@ -52,16 +52,16 @@ class ConfigurationPage extends StatelessWidget {
                   flex: 1,
                   child: Card(
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(20),
                             child: Image.asset(
                               "assets/support.png",
                             ),
                           ),
-                          Text("Suporte"),
+                          const Text("Suporte"),
                         ],
                       ),
                     ),
@@ -71,16 +71,16 @@ class ConfigurationPage extends StatelessWidget {
                   flex: 1,
                   child: Card(
                     child: Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(40),
+                            padding: const EdgeInsets.all(40),
                             child: Image.asset(
                               "assets/editar_category.png",
                             ),
                           ),
-                          Text("Editar Categoria"),
+                          const Text("Editar Categoria"),
                         ],
                       ),
                     ),
