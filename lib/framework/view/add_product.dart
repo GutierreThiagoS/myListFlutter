@@ -167,11 +167,12 @@ class AddProductView extends ConsumerWidget {
                     height: 15,
                   ),
                   CustomTextFieldWidget(
-                    onChange: ref.read(injectAddProductController).setPrice,
-                    label: "Preço",
-                    controller: getController(
+                      onChange: ref.read(injectAddProductController).setPrice,
+                      label: "Preço",
+                      controller: getController(
                         ref.read(injectAddProductController).price),
-                    prefixIcon: Icons.attach_money,
+                      prefixIcon: Icons.attach_money,
+                      keyboardType: TextInputType.number
                   ),
                   const SizedBox(
                     height: 15,

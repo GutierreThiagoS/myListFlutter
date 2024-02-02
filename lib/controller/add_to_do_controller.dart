@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_list_flutter/domain/model_entity/to_do_item.dart';
 import 'package:my_list_flutter/domain/repository/to_do_task_repository.dart';
+import 'package:my_list_flutter/framework/utils/date_convert.dart';
 
 class AddToDoController extends ChangeNotifier {
 
@@ -20,11 +21,15 @@ class AddToDoController extends ChangeNotifier {
 
   String _dateFinal = "";
   String get dateFinal => _dateFinal;
-  setDateFinal(String value) => _dateFinal = value;
+  setDateFinal(String value) {
+    _dateFinal = formatDateNumber(value);
+  }
 
   String _hourInitAlert = "";
   String get hourInitAlert => _hourInitAlert;
-  setHourInitAlert(String value) => _hourInitAlert = value;
+  setHourInitAlert(String value) {
+    _hourInitAlert = formatHourNumber(value);
+  }
 
   Future<bool> saveToDoTask(ToDoItem? task) async {
     DateTime agora = DateTime.now();
@@ -64,5 +69,12 @@ class AddToDoController extends ChangeNotifier {
     } else {
       return false;
     }
+  }
+
+  void clearToDoList() {
+    _title = "";
+    _description = "";
+    _dateFinal = "";
+    _hourInitAlert = "";
   }
 }

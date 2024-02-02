@@ -28,8 +28,19 @@ class _CatalogPageViewState extends ConsumerState<CatalogPageView> {
           return ListTile(
             contentPadding: const EdgeInsets.all(0),
             title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-            Text(widget.categories[i].name),
+            Container(
+              padding: EdgeInsets.only(left: 20),
+              child: Text(
+                  widget.categories[i].name,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 18
+                ),
+              ),
+            ),
             SizedBox(
               height: 260,
               child: ItemCatalogCard(

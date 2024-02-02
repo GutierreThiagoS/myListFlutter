@@ -80,9 +80,13 @@ class _AddToDoAlertState extends ConsumerState<AddToDoAlert> {
                   ),
 
                   CustomTextFieldWidget(
-                    controller: getController(ref.read(injectAddToDoController).dateFinal),
-                    onChange:
-                    ref.read(injectAddToDoController).setDateFinal,
+                    controller: getController(
+                        ref.read(injectAddToDoController).dateFinal),
+                    onChange: (value) {
+                      setState(() {
+                        ref.read(injectAddToDoController).setDateFinal(value);
+                      });
+                    },
                     label: "Data do Alarme",
                     prefixIcon: Icons.edit_calendar_outlined,
                       onPressedPrefixIcon: () {
@@ -93,46 +97,48 @@ class _AddToDoAlertState extends ConsumerState<AddToDoAlert> {
                           lastDate: DateTime(2100),
                         ).then((pickedDate) {
                           if (pickedDate != null) {
-                            String dateFormat = DateFormat('dd/MM/yyyy').format(pickedDate);
-                            ref.read(injectAddToDoController).setDateFinal(dateFormat);
+                            setState(() {
+                              String dateFormat = DateFormat('dd/MM/yyyy').format(pickedDate);
+                              ref.read(injectAddToDoController).setDateFinal(dateFormat);
+                            });
                           }
                         });
-                      }
+                      },
+                      keyboardType: TextInputType.number,
+                    cursorEnd: true,
                   ),
                   const SizedBox(
                     height: 15,
                   ),
 
-                  // Row(
-                  //   children: [
-                      CustomTextFieldWidget(
-                          controller: getController(ref.read(injectAddToDoController).hourInitAlert),
-                          onChange:
-                          ref.read(injectAddToDoController).setHourInitAlert,
-                          label: "Horario do Alarme",
-                          prefixIcon: Icons.access_time_outlined,
-                          onPressedPrefixIcon: () {
-                            showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.now(),
-                            ).then((picked) {
-                              if (picked != null) {
-                                String minute = picked.minute.toString();
-                                ref.read(injectAddToDoController).setHourInitAlert("${picked.hour}:${minute.padLeft(2, '0')}");
-                              }
+                  CustomTextFieldWidget(
+                      controller: getController(ref.read(injectAddToDoController).hourInitAlert),
+                      onChange: (value) {
+                        setState(() {
+                          ref.read(injectAddToDoController).setHourInitAlert(value);
+                        });
+                      },
+                      label: "Hora do Alarme",
+                      prefixIcon: Icons.access_time_outlined,
+                      onPressedPrefixIcon: () {
+                        showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        ).then((picked) {
+                          if (picked != null) {
+                            String hour = picked.hour.toString();
+                            String minute = picked.minute.toString();
+                            print("hour ${picked.hour}, minute $minute");
+                            setState(() {
+                              ref.read(injectAddToDoController)
+                                  .setHourInitAlert("${hour.padLeft(2, '0')}:${minute.padLeft(2, '0')}");
                             });
                           }
-                      ),
-
-                      /*CustomTextFieldWidget(
-                          controller: getController(ref.read(injectAddToDoController).hourInitAlert),
-                          onChange:
-                          ref.read(injectAddToDoController).setHourInitAlert,
-                          label: "Intervalo",
-                          prefixIcon: Icons.timelapse,
-                      ),*/
-                    // ],
-                  // ),
+                        });
+                      },
+                      keyboardType: TextInputType.number,
+                    cursorEnd: true,
+                  ),
 
                   const SizedBox(
                     height: 15,

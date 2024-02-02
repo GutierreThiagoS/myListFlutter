@@ -17,6 +17,8 @@ class ItemCatalogCard extends ConsumerStatefulWidget {
 class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
   bool add = true;
 
+  bool selected = false;
+
 
   Widget getImageNet(String? image) {
     if (image != null && image.isNotEmpty && (image.contains("http") || image.contains("storage"))) {
@@ -56,7 +58,56 @@ class _ItemCatalogCardState extends ConsumerState<ItemCatalogCard> {
       return Card(
         child: InkWell(
           onTap: () {
-
+            if(!selected) {
+              selected = true;
+              var showSnackBar = ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.categoryAndProducts.products[widgetIndex].description??"",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18
+                            ),
+                          ),
+                          SizedBox(height: 15),
+                          Row(children: [
+                            /*ElevatedButton(
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                },
+                                child: Row(children: [
+                                  Text("Cancelar"),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.cancel)
+                                ])
+                            ),*/
+                            SizedBox(width: 10),
+                            ElevatedButton(
+                                onPressed: () {
+                                  ref.read(injectAddProductController).clearProduct();
+                                  Navigator.of(context).pushNamed("/adicionarProduto", arguments: widget.categoryAndProducts.products[widgetIndex]);
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                },
+                                child: Row(children: [
+                                  Text("Editar"),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.edit_outlined)
+                                ])
+                            )
+                          ]),
+                        ],
+                      ),
+                    showCloseIcon: true,
+                  ),
+              );
+              showSnackBar.closed.then((value) {
+                print("showSnackBar.closed $value");
+                selected = false;
+              });
+            }
           },
           child: Container(
             padding: const EdgeInsets.all(10),

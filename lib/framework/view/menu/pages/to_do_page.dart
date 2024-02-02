@@ -4,6 +4,7 @@ import 'package:my_list_flutter/components/custom_progress.dart';
 import 'package:my_list_flutter/data/local/dao/product_dao.dart';
 import 'package:my_list_flutter/domain/model_entity/to_do_item.dart';
 import 'package:my_list_flutter/framework/view/menu/widget/task_page_view.dart';
+import 'package:my_list_flutter/main.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class ToDoListPage extends ConsumerStatefulWidget {
@@ -33,8 +34,8 @@ class _ToDoListPageState extends ConsumerState<ToDoListPage> {
             labels: ['Todos', 'Alert', 'Deletado'],
             icons: [
               Icons.filter_list,
-              Icons.account_box,
-              Icons.add_business_outlined
+              Icons.timer,
+              Icons.delete_sweep_outlined
             ],
             iconSize: 30.0,
             radiusStyle: true,
@@ -52,12 +53,21 @@ class _ToDoListPageState extends ConsumerState<ToDoListPage> {
                   final data = snapshot.requireData;
                   print(data);
                   if(data.isNotEmpty) {
-                    return TaskPageView(task: data);
+                    return TaskPageView(task: data, refresh: () {
+                      setState(() {
+                        print('TaskPageView refresh');
+                      });
+                    });
                   } else {
                     return Center(
                       child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pushNamed("/adicionarLembrete");
+                            ref.read(injectAddToDoController).clearToDoList();
+                            Navigator.of(context).pushNamed("/adicionarLembrete").then((value) {
+                              setState(() {
+                                print("$value teste");
+                              });
+                            });
                           },
                           child: const Text("Adicione um lembrente")
                       ),

@@ -10,6 +10,8 @@ class CustomTextFieldWidget extends StatefulWidget {
   final Function()? onPressedSuffixIcon;
   final Function()? onPressedPrefixIcon;
   final int? minLines;
+  final TextInputType keyboardType;
+  final bool cursorEnd;
 
   const CustomTextFieldWidget(
       {
@@ -22,7 +24,9 @@ class CustomTextFieldWidget extends StatefulWidget {
         this.suffixIcon,
         this.onPressedSuffixIcon,
         this.onPressedPrefixIcon,
-        this.minLines
+        this.minLines,
+        this.keyboardType = TextInputType.text,
+        this.cursorEnd = false
       });
 
   @override
@@ -41,6 +45,10 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
+
+    if(widget.cursorEnd) {
+      widget.controller?.selection = TextSelection.fromPosition(TextPosition(offset: widget.controller?.text.length??0));
+    }
     return  ValueListenableBuilder<bool>(
         valueListenable: visible,
       builder: (_, isVisible, __) {
@@ -69,12 +77,12 @@ class _CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
                 ? IconButton(
               icon: Icon(widget.suffixIcon),
               onPressed: widget.onPressedSuffixIcon,
-            )
-                : null),
-        onChanged: widget.onChange,
-        obscureText: isVisible,
-        minLines: widget.minLines,
-        maxLines: null
+            ) : null),
+            onChanged: widget.onChange,
+            obscureText: isVisible,
+            minLines: widget.minLines,
+            maxLines: null,
+            keyboardType: widget.keyboardType,
       );
     });
   }

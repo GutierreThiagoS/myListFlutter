@@ -19,7 +19,7 @@ class _ProductPageState extends ConsumerState<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.black12,
+        // color: Colors.black12,
         child: Consumer(builder: (context, watch, _) {
           return StreamBuilder<List<ProductInItemShopping>>(
             stream: widget.dao.getAllProductWithShoppingAsync(),

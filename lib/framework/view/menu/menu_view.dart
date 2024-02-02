@@ -1,7 +1,13 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:my_list_flutter/data/local/dao/product_dao.dart';
+import 'package:my_list_flutter/framework/config_notification/config_notificationn.dart';
+import 'package:my_list_flutter/framework/config_notification/received_notification.dart';
 import 'package:my_list_flutter/framework/utils/text.dart';
 import 'package:my_list_flutter/framework/view/menu/pages/config_page.dart';
 import 'package:my_list_flutter/framework/view/menu/pages/to_do_page.dart';
@@ -11,14 +17,109 @@ import 'package:my_list_flutter/main.dart';
 
 class MenuView extends ConsumerStatefulWidget {
   final ProductDao dao;
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails;
 
-  const MenuView({super.key, required this.dao});
+  const MenuView({super.key, required this.dao, this.notificationAppLaunchDetails});
+
+  bool get didNotificationLaunchApp =>
+      notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
 
   @override
   ConsumerState<MenuView> createState() => _MenuViewState();
 }
 
 class _MenuViewState extends ConsumerState<MenuView> {
+
+  bool _notificationsEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isAndroidPermissionGranted();
+    _requestPermissions();
+    _configureDidReceiveLocalNotificationSubject();
+    _configureSelectNotificationSubject();
+  }
+
+  Future<void> _isAndroidPermissionGranted() async {
+    print("TESTE");
+    if (Platform.isAndroid) {
+      final bool granted = await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.areNotificationsEnabled() ??
+          false;
+
+      setState(() {
+        _notificationsEnabled = granted;
+      });
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    if (Platform.isIOS || Platform.isMacOS) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<MacOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    } else if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+      flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+
+      final bool? grantedNotificationPermission =
+      await androidImplementation?.requestNotificationsPermission();
+      setState(() {
+        _notificationsEnabled = grantedNotificationPermission ?? false;
+      });
+    }
+  }
+
+  void _configureDidReceiveLocalNotificationSubject() {
+    didReceiveLocalNotificationStream.stream
+        .listen((ReceivedNotification receivedNotification) async {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: receivedNotification.title != null ? Text(receivedNotification.title!) : null,
+          content: receivedNotification.body != null ? Text(receivedNotification.body!) : null,
+          actions: <Widget>[
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () async {
+                Navigator.of(context, rootNavigator: true).pop();
+                await Navigator.of(context).pushNamed("/");
+              },
+              child: const Text('Ok'),
+            )
+          ],
+        ),
+      );
+    });
+  }
+
+  void _configureSelectNotificationSubject() {
+    selectNotificationStream.stream.listen((String? payload) async {
+      await Navigator.of(context).pushNamed("/");
+    });
+  }
+
+  @override
+  void dispose() {
+    didReceiveLocalNotificationStream.close();
+    selectNotificationStream.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
@@ -90,7 +191,9 @@ class _MenuViewState extends ConsumerState<MenuView> {
                             ],
                           );
                         });
-                  })),
+                  }),
+            elevation: 10,
+          ),
           body: Container(
               child: PageView(
             controller: pageController,
@@ -123,12 +226,21 @@ class _MenuViewState extends ConsumerState<MenuView> {
                               .isNavigationInShopping()) {
                             ref.read(injectAddProductController).clearProduct();
                             Navigator.of(context)
-                                .pushNamed("/adicionarProduto");
+                                .pushNamed("/adicionarProduto").then((value) {
+                              setState(() {
+                                print("$value adicionarProduto teste");
+                              });
+                            });;
                           } else if (ref
                               .read(injectProductController)
                               .isNavigationInTodo()) {
+                            ref.read(injectAddToDoController).clearToDoList();
                             Navigator.of(context)
-                                .pushNamed("/adicionarLembrete");
+                                .pushNamed("/adicionarLembrete").then((value) {
+                              setState(() {
+                                print("$value adicionarProduto teste");
+                              });
+                            });;
                           }
                         },
                         child: const Icon(Icons.add, color: Colors.white));

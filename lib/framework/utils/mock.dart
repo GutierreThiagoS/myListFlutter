@@ -23,7 +23,7 @@ List<Product> products = [
   Product(
       null,
       "Sabonete Líquido 250ml",
-      "https://cdn.ultrafarma.com.br/static/produtos/814973/large-638089531645820464-814973_6.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4zPPwHSs8Zj4Gp5EnMzKK1go3-_K15HNPgg&usqp=CAU",
       "Dove",
       2,
       // Suponhamos que a categoria "Higiene" tenha id 2
@@ -48,7 +48,7 @@ List<Product> products = [
   Product(
       null,
       "Maçã - 1 unidade",
-      "https://feelgoodpal.com/blog/how-long-do-apples-last/feature_hu42d22c423e5b513dc50352d3614c0592_341955_720x414_fill_q45_box_smart1.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/280px-Red_Apple.jpg",
       "Fazenda Feliz",
       10,
       // Suponhamos que a categoria "Frutas" tenha id 2
